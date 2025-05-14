@@ -9,7 +9,7 @@ router.post("/tasks", verifyToken, async (req, res) => {
     const { name, description, deadline, group } = req.body;
     let groupIds = [];
     if (!group.length) {
-        groupIds = await Group.find({members: req.user.userId}).select("_id");
+      groupIds = await Group.find({ members: req.user.userId }).select("_id");
     }
     const task = new Task({
       name,
@@ -32,13 +32,13 @@ router.get("/tasks", verifyToken, async (req, res) => {
     const { deadline, completed, createdAt } = req.query;
     const query = {};
     if (deadline) {
-        query.deadline = {$lte: deadline};
+      query.deadline = { $lte: deadline };
     }
     if (completed) {
-        query.completed = completed;
+      query.completed = completed;
     }
     if (createdAt) {
-        query.createdAt = {$gte: createdAt};
+      query.createdAt = { $gte: createdAt };
     }
     const tasks = await Task.find(query);
     res.json(tasks);
@@ -115,7 +115,7 @@ router.get("/tasks/group/:id", verifyToken, async (req, res) => {
 
     const { deadline, completed, createdAt } = req.query;
     const query = { group: req.params.id };
-    
+
     if (deadline) {
       query.deadline = { $lte: deadline };
     }
@@ -126,8 +126,16 @@ router.get("/tasks/group/:id", verifyToken, async (req, res) => {
       query.createdAt = { $gte: createdAt };
     }
 
-    const tasks = await Task.find(query);
-    res.json(tasks);
+    const grouped = await Task.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: "$creator",
+          tasks: { $push: "$$ROOT" },
+        },
+      },
+    ]);
+    res.json(grouped);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
