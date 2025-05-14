@@ -6,7 +6,7 @@ const { verifyToken } = require("../handy/jwt");
 
 const router = express.Router();
 const jwtSecret = process.env.JWT_SECRET;
-const salt = Number(process.env.SALT_ROUNDS) || 10;
+const salt = Number(process.env.SALT_ROUNDS);
 
 // Get all users (protected) - excludes passwords
 router.get("/users/all", verifyToken, async (req, res) => {

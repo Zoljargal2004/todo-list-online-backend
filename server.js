@@ -3,6 +3,7 @@ const express = require("express");
 const { dbConnect } = require("./db");
 const userRouter = require("./services/userServices");
 const groupRouter = require("./services/groupServices");
+const taskRouter = require("./services/taskServices");
 const app = express();
 const PORT = process.env.PORT || 8000;
 
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 // API Routes with prefix
 app.use(userRouter);
 app.use(groupRouter);
+app.use(taskRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
