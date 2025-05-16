@@ -30,6 +30,7 @@ router.post("/tasks", verifyToken, async (req, res) => {
 router.get("/tasks", verifyToken, async (req, res) => {
   try {
     const { deadline, completed, createdAt } = req.query;
+    const creator = req.user.userId;
     const query = {};
     if (deadline) {
       query.deadline = { $lte: deadline };
@@ -113,7 +114,7 @@ router.get("/tasks/group/:id", verifyToken, async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    const { deadline, completed, createdAt } = req.query;
+    const { deadline, completed, createdAt, creator } = req.query;
     const query = { group: req.params.id };
 
     if (deadline) {
@@ -124,6 +125,9 @@ router.get("/tasks/group/:id", verifyToken, async (req, res) => {
     }
     if (createdAt) {
       query.createdAt = { $gte: createdAt };
+    }
+    if (creator) {
+      query.creator = creator;
     }
 
     const grouped = await Task.aggregate([
