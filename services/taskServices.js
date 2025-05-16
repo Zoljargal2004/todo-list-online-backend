@@ -41,6 +41,9 @@ router.get("/tasks", verifyToken, async (req, res) => {
     if (createdAt) {
       query.createdAt = { $gte: createdAt };
     }
+    if (creator) {
+      query.creator = creator;
+    }
     const tasks = await Task.find(query);
     res.json(tasks);
   } catch (error) {
