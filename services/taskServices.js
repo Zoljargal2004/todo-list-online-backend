@@ -53,10 +53,10 @@ router.get("/tasks", verifyToken, async (req, res) => {
 
 router.put("/tasks/:id", verifyToken, async (req, res) => {
   try {
-    const { name, description, deadline } = req.body;
+    const { name, description, deadline, group, completed } = req.body;
     const task = await Task.findByIdAndUpdate(
       req.params.id,
-      { name, description, deadline },
+      { name, description, deadline, group, completed },
       { new: true }
     );
     res.json(task);
@@ -81,31 +81,6 @@ router.delete("/tasks/:id", verifyToken, async (req, res) => {
   }
 });
 
-router.post("/tasks/complete/:id", verifyToken, async (req, res) => {
-  try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      { completed: true },
-      { new: true }
-    );
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.post("/tasks/incomplete/:id", verifyToken, async (req, res) => {
-  try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      { completed: false },
-      { new: true }
-    );
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 router.get("/tasks/group/:id", verifyToken, async (req, res) => {
   try {
