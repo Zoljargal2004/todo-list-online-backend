@@ -4,12 +4,19 @@ const { verifyToken } = require("../handy/jwt");
 const { generateGroupCode } = require("../handy/createNewGroupId");
 const router = express.Router();
 
+// Get my groups (where I'm a member)
+router.get('/groups/my', verifyToken, async (req, res) => {
+    try {
+        const groups = await Group.find({ members: req.user.userId });
+        res.json(groups);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Create group (protected)
 router.post('/groups', verifyToken, async (req, res) => {
     try {
-        // const token = req.headers.authorization;
-        // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // const userId = decoded.userId;
         const { name, description } = req.body;
         const groupCode = generateGroupCode();
         
