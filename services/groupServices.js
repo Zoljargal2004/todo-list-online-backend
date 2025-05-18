@@ -14,6 +14,16 @@ router.get('/groups/my', verifyToken, async (req, res) => {
     }
 });
 
+// Get groups I created
+router.get('/groups/created', verifyToken, async (req, res) => {
+    try {
+        const groups = await Group.find({ creator: req.user.userId });
+        res.json(groups);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Create group (protected)
 router.post('/groups', verifyToken, async (req, res) => {
     try {
